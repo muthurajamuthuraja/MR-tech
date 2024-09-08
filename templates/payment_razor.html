@@ -1,0 +1,85 @@
+{% extends 'index_main.html' %}
+{% block contant%}
+{% load static %}
+
+<br>
+<br><br>
+<div class="row mb-5">
+  <div class="col-md-12">
+    <form action="{% url 'handler' %}" method="POST">
+      {% csrf_token %}
+
+      <h2 class="h3 mb-3 text-black" style=" text-align: center;">Your Order</h2>
+      <div class="p-3 p-lg-5 border bg-white">
+        <table class="table site-block-order-table mb-5">
+
+          <thead>
+            <th>Product</th>
+            <th>Total</th>
+          </thead>
+          <tbody>
+            {% for data in cart_data.order_list_items.all %}
+            <tr>
+              <td>{{data.order_product.product_name}} <strong class="mx-2">x</strong>{{data.order_quantity}}</td>
+              <td>₹{{data.get_total_item_price}}</td>
+            </tr>
+            {% endfor %}
+  
+            <tr>
+              <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
+              <td class="text-black font-weight-bold"><strong>₹{{final_price}}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+
+        <div class="border p-3 mb-5">
+          <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsepaypal" role="button"
+              aria-expanded="false" aria-controls="collapsepaypal"> </a></h3>
+
+ 
+          
+          <button id="rzp-button1" class="btn btn-black btn-lg py-3 btn-block">Pay </button>
+          <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+          <script>
+            document.addEventListener('DOMContentLoaded', function () {
+              var options = {
+                "key": "{{razorpay_merchant_id}}", // Enter the Key ID generated from the Dashboard
+                "amount": "{{data.get_total_item_price}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                "currency": "INR",
+                "name": "Muthuraja Tech",
+                "description": "Test Transaction",
+                redirect: true,
+                "image": "https://example.com/your_logo",
+                "order_id": "{{payment_order_id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                "callback_url":"http://127.0.0.1:8000/main/handler/",
+                "prefill": {
+                  "name": "{{request.user.username}}",
+                  "email": "{{request.user.email}}",
+                  "contact": "{{request.user.mobile}}"
+                },
+                "notes": {
+                  "address": "Razorpay Corporate Office"
+                },
+                "theme": {
+                  "color": "#3399cc"
+                }
+              };
+
+              var rzp1 = new Razorpay(options);
+              document.getElementById('rzp-button1').onclick = function (e) {
+                rzp1.open();
+                e.preventDefault();
+              }
+            });
+          </script>
+
+
+        </div>
+    </form>
+  </div>
+</div>
+</div>
+
+
+{% endblock %}

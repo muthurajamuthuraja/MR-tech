@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}" type="text/css" media="all" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+
+<body>
+  
+    <div class="py-4">
+      <div class="px-14 py-6">
+        <table class="w-full border-collapse border-spacing-0">
+          <tbody>
+            <tr>
+              <td class="w-full align-top">
+                <div>
+                  <img src="" class="h-12" />
+                </div>
+              </td>
+
+              <td class="align-top">
+                <div class="text-sm">
+                  <table class="border-collapse border-spacing-0">
+                    <tbody>
+                      <tr>
+                        <td class="border-r pr-4">
+                          <div>
+                            <p class="whitespace-nowrap text-slate-400 text-right">Date Time</p>
+                            <p class="whitespace-nowrap font-bold text-main text-right">{{Invoice_Time}}</p>
+                          </div>
+                        </td>
+                        <td class="pl-4">
+                          <div>
+                            <p class="whitespace-nowrap text-slate-400 text-right">Invoice</p>
+                            <p class="whitespace-nowrap font-bold text-main text-right">{{payment_status.order_id}}</p>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-slate-100 px-14 py-6 text-sm">
+        <table class="w-full border-collapse border-spacing-0">
+          <tbody>
+            <tr>
+              <td class="w-1/2 align-top">
+                <div class="text-sm text-neutral-600">
+                  <p class="font-bold">MR Company INC</p>
+                  <p>Number:7538825539</p>
+                  <p>VAT: 23456789</p>
+                  <p>BTM 2 stage</p>
+                  <p>Bangalore,KA</p>
+                  <p>India</p>
+                </div>
+              </td>
+              <td class="w-1/2 align-top text-right">
+                <div class="text-sm text-neutral-600">
+                  <p class="font-bold">Customer: {{check_out_id.user}}
+                    <div>
+                    {% if payment_status.notes.company_name is None%}
+                      <p>Company: None</p>
+                    {% else %}
+                    <p>Company: {{payment_status.notes.company_name}}</p>
+                    {% endif%}
+                    </div>
+                  </p>
+                  <p>Email: {{payment_status.email}}</p>
+                  <p>Number: {{payment_status.contact}}</p>
+                  <p>Address: {{payment_status.notes.address}}</p>
+                  <p>State: {{payment_status.notes.state}} {{payment_status.notes.post_code}}</p>
+                  <p>Country: {{check_out_id.country}}</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="px-14 py-10 text-sm text-neutral-700">
+        <table class="w-full border-collapse border-spacing-0">
+          <thead>
+            <tr>
+              <td class="border-b-2 border-main pb-3 pl-3 font-bold text-main">No</td>
+              <td class="border-b-2 border-main pb-3 pl-2 font-bold text-main">Product details</td>
+              <td class="border-b-2 border-main pb-3 pl-2 text-right font-bold text-main">Price</td>
+              <td class="border-b-2 border-main pb-3 pl-2 text-center font-bold text-main">Qty</td>
+              <td class="border-b-2 border-main pb-3 pl-2 pr-3 text-right font-bold text-main">Subtotal</td>
+            </tr>
+          </thead>
+          <tbody>
+            {%  for data in cart_list_ord.order_list_items.all %}
+            <tr>
+              <td class="border-b py-3 pl-3">{{forloop.counter}}</td>
+              <td class="border-b py-3 pl-2">{{data.order_product.product_name}}</td>
+              <td class="border-b py-3 pl-2 text-right">₹{{data.order_product.price}}</td>
+              <td class="border-b py-3 pl-2 text-center">{{data.order_quantity}}</td>
+              <td class="border-b py-3 pl-2 pr-3 text-right">₹{{data.get_total_item_price}}</td>
+            </tr>
+            {% endfor %}
+            <br>
+            <br>
+            <tr>
+              <td colspan="7">
+                <table class="w-full border-collapse border-spacing-0">
+                  <tbody>
+                    <tr>
+                      <td class="w-full"></td>
+                      <td>
+                        <table class="w-full border-collapse border-spacing-0">
+                          <tbody>
+                            <tr>
+                              <td class="bg-main p-3">
+                                <div class="whitespace-nowrap font-bold text-white">Total:</div>
+                              </td>
+                              <td class="bg-main p-3 text-right">
+                                <div class="whitespace-nowrap font-bold text-white">${{cart_list_ord.get_total_product_items}}</div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="px-14 text-sm text-neutral-700">
+        <p class="text-main font-bold">PAYMENT DETAILS</p>
+        <p>Banks {{payment_status.bank}}</p>
+        <p>Transitions Method: {{payment_status.method}}</p>
+        <p>Transitions id: {{payment_status.acquirer_data.bank_transaction_id}}</p>
+      </div>
+
+      <div class="px-14 py-10 text-sm text-neutral-700">
+        <p class="text-main font-bold">Notes</p>
+        <p class="italic">🚀 Thank you for choosing M☈ Tech. We bring the latest technology to your doorstep, helping you stay ahead. We appreciate your trust and look forward to serving you again! 😊".</p>
+        </dvi>
+        <div style="text-align: center;"><button type="button" class="btn btn-primary btn-lg" >Print or get PDF</button><span><a href="{% url 'shop' %}"><button  class="btn btn-primary btn-lg">Continue Shop</button></a></span></div>
+        
+        
+        <footer class="fixed bottom-0 left-0 bg-slate-100 w-full text-neutral-600 text-center text-xs py-3">
+          Supplier Company
+          <span class="text-slate-300 px-2">|</span>
+          Muthurajpostbox@gmail.com
+          <span class="text-slate-300 px-2">|</span>
+          7538825539
+        </footer>
+      </div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script>
+  document.querySelector('button').addEventListener("click",function(){
+  window.print();})
+</script>
+
+</html>
